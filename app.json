@@ -23,7 +23,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#161512"
       },
-      "package": "com.chessarena.app"
+      "package": "com.chessarena.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png",
