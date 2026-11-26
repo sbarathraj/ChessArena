@@ -98,6 +98,10 @@ export class ChessGame {
     }
   }
 
+  public undo(): boolean {
+    return !!this.instance.undo();
+  }
+
   public getGameResult(): GameResult {
     if (this.instance.isCheckmate()) {
       const winner = this.instance.turn() === 'w' ? 'b' : 'w';

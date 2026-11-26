@@ -17,6 +17,10 @@
     "preview": {
       "distribution": "internal",
       "node": "22.12.0",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://fraqqpkxpycerejkctyy.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyYXFxcGt4cHljZXJlamtjdHl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2NzE4MzcsImV4cCI6MjExMTI0NzgzN30.oFodUjJw_fNJoa4AEQl25zNTZuP7bFd4N-VGS02-VsI"
+      },
       "android": {
         "buildType": "apk"
       }
@@ -24,6 +28,10 @@
     "production": {
       "autoIncrement": true,
       "node": "22.12.0",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://fraqqpkxpycerejkctyy.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZyYXFxcGt4cHljZXJlamtjdHl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2NzE4MzcsImV4cCI6MjExMTI0NzgzN30.oFodUjJw_fNJoa4AEQl25zNTZuP7bFd4N-VGS02-VsI"
+      },
       "android": {
         "buildType": "app-bundle"
       }

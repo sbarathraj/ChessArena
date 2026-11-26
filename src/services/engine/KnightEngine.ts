@@ -23,47 +23,47 @@ export const BOT_LEVELS: BotPersonality[] = [
     depth: 2,
     description: 'Disciplined club player. Follows sound opening rules, guards pieces, and punishes free hanging pawns.',
     style: 'solid',
-    searchCandidates: 12,
+    searchCandidates: 8,
     candidateMargin: 35,
   },
   {
     id: 'casual',
     name: 'Archer (1400 ELO)',
     rating: 1400,
-    depth: 3,
+    depth: 2,
     description: 'Sharp attacking player. Hunts kingside attacks, develops pieces swiftly, and executes pin & fork tactics.',
     style: 'aggressive',
-    searchCandidates: 16,
+    searchCandidates: 10,
     candidateMargin: 25,
   },
   {
     id: 'intermediate',
     name: 'Knight (1800 ELO)',
     rating: 1800,
-    depth: 3,
+    depth: 2,
     description: 'Master tactician. Controls open files, coordinates rook lifts, and calculates multi-move exchanges.',
     style: 'tactical',
-    searchCandidates: 20,
+    searchCandidates: 12,
     candidateMargin: 15,
   },
   {
     id: 'advanced',
     name: 'Champion (2200 ELO)',
     rating: 2200,
-    depth: 4,
+    depth: 3,
     description: 'International Master caliber. Squeezes positional advantages, dominates bishop pairs, and converts endgames.',
     style: 'positional',
-    searchCandidates: 24,
+    searchCandidates: 14,
     candidateMargin: 8,
   },
   {
     id: 'grandmaster',
     name: 'Arena Titan (2700 ELO)',
     rating: 2700,
-    depth: 4,
+    depth: 3,
     description: 'Grandmaster engine: Deep Quiescence search, MVV-LVA move ordering, king safety heuristics, and zero mistakes.',
     style: 'unbeatable',
-    searchCandidates: 28,
+    searchCandidates: 16,
     candidateMargin: 0,
   },
 ];
@@ -188,6 +188,7 @@ export class KnightEngine {
 
     const scoredMoves: { move: MoveDetails; score: number }[] = [];
     let bestScore = -Infinity;
+    const searchGame = new ChessGame(game.getFen());
 
     for (let i = 0; i < sortedMoves.length; i++) {
       const move = sortedMoves[i];
@@ -195,12 +196,11 @@ export class KnightEngine {
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
 
-      const clone = new ChessGame(game.getFen());
-      clone.makeMove(move.from, move.to, move.promotion);
+      searchGame.makeMove(move.from, move.to, move.promotion);
 
       // Deep Alpha-Beta search with Quiescence resolution
       const score = -this.alphaBeta(
-        clone,
+        searchGame,
         config.depth - 1,
         -Infinity,
         Infinity,
@@ -208,6 +208,7 @@ export class KnightEngine {
         config.searchCandidates,
         config.style
       );
+      searchGame.undo();
 
       scoredMoves.push({ move, score });
       if (score > bestScore) {
@@ -296,11 +297,10 @@ export class KnightEngine {
     const candidatesCount = Math.min(moves.length, searchCandidates);
     for (let i = 0; i < candidatesCount; i++) {
       const move = moves[i];
-      const clone = new ChessGame(game.getFen());
-      clone.makeMove(move.from, move.to, move.promotion);
+      game.makeMove(move.from, move.to, move.promotion);
 
       const evaluation = -this.alphaBeta(
-        clone,
+        game,
         depth - 1,
         -beta,
         -alpha,
@@ -308,6 +308,8 @@ export class KnightEngine {
         searchCandidates,
         style
       );
+      game.undo();
+
       maxEval = Math.max(maxEval, evaluation);
       alpha = Math.max(alpha, evaluation);
       if (beta <= alpha) {
@@ -336,14 +338,15 @@ export class KnightEngine {
     if (alpha < standPat) alpha = standPat;
 
     const captureMoves = this.orderMoves(
-      game.getLegalMoves().filter((m) => !!m.captured || m.isCheck || !!m.promotion)
+      game.getLegalMoves().filter((m) => !!m.captured || !!m.promotion)
     );
 
     for (const move of captureMoves) {
-      const clone = new ChessGame(game.getFen());
-      clone.makeMove(move.from, move.to, move.promotion);
+      game.makeMove(move.from, move.to, move.promotion);
 
-      const score = -this.quiescence(clone, -beta, -alpha, !isWhite, maxQDepth - 1, style);
+      const score = -this.quiescence(game, -beta, -alpha, !isWhite, maxQDepth - 1, style);
+      game.undo();
+
       if (score >= beta) return beta;
       if (score > alpha) alpha = score;
     }

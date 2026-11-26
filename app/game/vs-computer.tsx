@@ -92,7 +92,13 @@ export default function VsComputerScreen() {
 
     try {
       const uciHistory = updatedHistory.map((h) => `${h.from}${h.to}`);
-      const engineMove = await KnightEngine.findMoveAsync(game, selectedBot, uciHistory);
+      let engineMove = await KnightEngine.findMoveAsync(game, selectedBot, uciHistory);
+      if (!engineMove) {
+        const legalMoves = game.getLegalMoves();
+        if (legalMoves.length > 0) {
+          engineMove = legalMoves[0];
+        }
+      }
       if (engineMove) {
         const executed = game.makeMove(engineMove.from, engineMove.to, engineMove.promotion);
         if (executed) {
@@ -113,7 +119,23 @@ export default function VsComputerScreen() {
         }
       }
     } catch {
-      setStatusMessage('White to move');
+      try {
+        const legal = game.getLegalMoves();
+        if (legal.length > 0) {
+          const fallback = legal[0];
+          const executed = game.makeMove(fallback.from, fallback.to, fallback.promotion);
+          if (executed) {
+            setLastMove({ from: executed.from, to: executed.to });
+            setHistory([
+              ...updatedHistory,
+              { fen: executed.fenAfter, san: executed.san, from: executed.from, to: executed.to },
+            ]);
+            setStatusMessage(`Your turn vs ${activeBot.name}`);
+          }
+        }
+      } catch {
+        setStatusMessage('White to move');
+      }
     } finally {
       setIsThinking(false);
     }
