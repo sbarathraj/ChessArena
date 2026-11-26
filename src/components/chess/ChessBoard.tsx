@@ -9,6 +9,7 @@ import {
 import { ChessGame } from '../../domain/chess/ChessGame';
 import { Square, PieceColor, PieceType, MoveDetails } from '../../domain/chess/types';
 import { ChessPieceView } from './ChessPieceView';
+import { playMoveSound } from '../../services/sound/SoundService';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
@@ -85,6 +86,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           const move = game.makeMove(selectedSquare, sq);
           if (move) {
             setSelectedSquare(null);
+            playMoveSound({ captured: !!move.captured, isCheck: move.isCheck });
             if (onMove) onMove(move);
             return;
           }

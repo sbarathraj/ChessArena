@@ -16,6 +16,7 @@
     "chess.js": "^1.0.0-beta.9",
     "expo": "~52.0.46",
     "expo-asset": "~11.0.4",
+    "expo-av": "~15.0.2",
     "expo-constants": "~17.0.8",
     "expo-crypto": "~14.0.2",
     "expo-haptics": "~14.0.1",

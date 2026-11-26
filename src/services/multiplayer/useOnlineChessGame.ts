@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '../supabase/client';
 import { ChessGame } from '../../domain/chess/ChessGame';
 import { Square, MoveDetails, PieceColor } from '../../domain/chess/types';
+import { playMoveSound } from '../sound/SoundService';
 
 export interface OnlineGameState {
   id: string;
@@ -208,7 +209,11 @@ export function useOnlineChessGame(gameId: string, currentUserId?: string) {
           table: 'game_moves',
           filter: `game_id=eq.${gameId}`,
         },
-        () => {
+        (payload: any) => {
+          const san = payload.new?.san || '';
+          const isCheck = san.includes('+') || san.includes('#');
+          const captured = san.includes('x');
+          playMoveSound({ captured, isCheck });
           fetchCanonicalState();
         }
       )

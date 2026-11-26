@@ -13,6 +13,7 @@ import { ChessGame } from '../../src/domain/chess/ChessGame';
 import { PuzzleItem, PuzzleService, PUZZLE_CATALOG } from '../../src/services/puzzles/PuzzleService';
 import { MoveDetails, Square, PieceColor } from '../../src/domain/chess/types';
 import { KnightArenaTheme } from '../../src/theme/tokens';
+import { playMoveSound } from '../../src/services/sound/SoundService';
 
 export default function PuzzlesScreen() {
   const { width } = useWindowDimensions();
@@ -119,7 +120,10 @@ export default function PuzzlesScreen() {
           const from = opponentUci.slice(0, 2) as Square;
           const to = opponentUci.slice(2, 4) as Square;
           const promo = (opponentUci.slice(4, 5) || 'q') as any;
-          game.makeMove(from, to, promo);
+          const executed = game.makeMove(from, to, promo);
+          if (executed) {
+            playMoveSound({ captured: !!executed.captured, isCheck: executed.isCheck });
+          }
           setMoveIndex(nextIndex + 1);
           setStatus('Your turn. Complete the winning line!');
         }, 500);

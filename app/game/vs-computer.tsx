@@ -17,6 +17,7 @@ import { CapturedPiecesBar } from '../../src/components/chess/CapturedPiecesBar'
 import { computeCapturedPieces } from '../../src/domain/chess/captured';
 import { GameOverModal } from '../../src/components/chess/GameOverModal';
 import { useAuth } from '../../src/services/supabase/AuthContext';
+import { playMoveSound } from '../../src/services/sound/SoundService';
 
 interface HistorySnapshot {
   fen: string;
@@ -102,6 +103,7 @@ export default function VsComputerScreen() {
       if (engineMove) {
         const executed = game.makeMove(engineMove.from, engineMove.to, engineMove.promotion);
         if (executed) {
+          playMoveSound({ captured: !!executed.captured, isCheck: executed.isCheck });
           setLastMove({ from: executed.from, to: executed.to });
           setHistory([
             ...updatedHistory,
@@ -125,6 +127,7 @@ export default function VsComputerScreen() {
           const fallback = legal[0];
           const executed = game.makeMove(fallback.from, fallback.to, fallback.promotion);
           if (executed) {
+            playMoveSound({ captured: !!executed.captured, isCheck: executed.isCheck });
             setLastMove({ from: executed.from, to: executed.to });
             setHistory([
               ...updatedHistory,
